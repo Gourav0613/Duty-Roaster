@@ -1,0 +1,54 @@
+{
+  "name": "duty-roster-manager",
+  "version": "1.0.0",
+  "description": "Cross-platform Electron app to clean up messy HR duty-roster exports and (soon) automate adapter scheduling.",
+  "main": "src/main.js",
+  "author": "Duty Roster Manager",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test \"test/**/*.test.js\"",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "pack": "electron-builder --dir"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "optionalDependencies": {
+    "pdfjs-dist": "^4.4.168"
+  },
+  "build": {
+    "appId": "com.dutyroster.manager",
+    "productName": "Duty Roster Manager",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office"
+    }
+  }
+}

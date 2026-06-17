@@ -1,0 +1,12 @@
+node_modules/
+release/
+dist/
+*.log
+.DS_Store
+Thumbs.db
+
+# Don't commit the binary HR export
+samples/*.XLS
+samples/*.xls
+samples/*.xlsx
+.aider*
