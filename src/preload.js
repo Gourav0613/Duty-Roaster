@@ -31,4 +31,19 @@ contextBridge.exposeInMainWorld('api', {
 
   /** Module 2: read a formatted .xlsx into rows for preview. */
   previewOutput: (filePath) => ipcRenderer.invoke('preview-output', filePath),
+
+  /** Adapter: load saved period params (workArea, startDate, etc.) from userData. */
+  adapterLoadPeriod: () => ipcRenderer.invoke('adapter-load-period'),
+
+  /** Adapter: save period params to userData. */
+  adapterSavePeriod: (period) => ipcRenderer.invoke('adapter-save-period', period),
+
+  /** Adapter: true if a parsed-roster.json snapshot exists. */
+  adapterHasParsed: () => ipcRenderer.invoke('adapter-has-parsed'),
+
+  /**
+   * Adapter: diff Excel against HIS and (optionally) push changes.
+   * @param {{ dryRun: boolean, period: object }} opts
+   */
+  adapterSync: (opts) => ipcRenderer.invoke('adapter-sync', opts),
 });

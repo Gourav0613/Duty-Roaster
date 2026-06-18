@@ -12,6 +12,9 @@ const fs = require('fs');
 
 const { convertFile } = require('./core/convert');
 const { recordOutput, getLatestOutput } = require('./core/store');
+const { readRoster, updateRoster } = require('./core/adapterApi');
+const { buildChanges } = require('./core/rosterSync');
+const adapterConfig = require('./core/adapterConfig');
 
 const DEFAULT_OUTPUT_NAME = 'Duty_Roster_Formatted.xlsx';
 
@@ -99,6 +102,19 @@ ipcMain.handle('convert-roster', async (_evt, sourcePath) => {
     };
     recordOutput(userDataDir(), entry);
 
+    // Persist minimal parsed data for the Adapter Automation module.
+    const parsedSnapshot = {
+      employees: parsed.employees.map((e) => ({ emp: e.emp, name: e.name, days: e.days })),
+      monthLength: parsed.monthLength,
+      workArea: parsed.workArea,
+      savedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(
+      path.join(userDataDir(), 'parsed-roster.json'),
+      JSON.stringify(parsedSnapshot, null, 2),
+      'utf8'
+    );
+
     return {
       ok: true,
       tempPath,
@@ -140,6 +156,135 @@ ipcMain.handle('save-output', async (_evt, tempPath) => {
 /** Module 2: latest formatted output (path + metadata) or null. */
 ipcMain.handle('get-latest-output', async () => {
   return getLatestOutput(userDataDir());
+});
+
+// ---------------------------------------------------------------------------
+// Adapter Automation IPC handlers
+// ---------------------------------------------------------------------------
+
+const PARSED_ROSTER_FILE = 'parsed-roster.json';
+const PERIOD_FILE = 'adapter-period.json';
+
+/** Persist period params (workArea, dept, unit, etc.) to userData. */
+ipcMain.handle('adapter-save-period', async (_evt, period) => {
+  try {
+    fs.writeFileSync(
+      path.join(userDataDir(), PERIOD_FILE),
+      JSON.stringify(period, null, 2),
+      'utf8'
+    );
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+/** Load saved period params. */
+ipcMain.handle('adapter-load-period', async () => {
+  try {
+    const p = path.join(userDataDir(), PERIOD_FILE);
+    if (!fs.existsSync(p)) return null;
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch {
+    return null;
+  }
+});
+
+/** True if a parsed-roster.json snapshot exists (works cross-session). */
+ipcMain.handle('adapter-has-parsed', async () => {
+  return fs.existsSync(path.join(userDataDir(), PARSED_ROSTER_FILE));
+});
+
+/**
+ * Build changes from the saved parsed roster and call the HIS update endpoint.
+ * Credentials come from adapterConfig.js (hardcoded).
+ * Only dates present (non-empty) in the Excel are ever included.
+ */
+ipcMain.handle('adapter-sync', async (_evt, { dryRun, period }) => {
+  let changes = null; // hoisted so catch can include it in error response
+  try {
+    const parsedPath = path.join(userDataDir(), PARSED_ROSTER_FILE);
+    if (!fs.existsSync(parsedPath)) {
+      return { ok: false, error: 'No formatted roster found. Convert a file in Roster Formatter first.' };
+    }
+
+    const creds = adapterConfig;
+    if (!creds.BASE_URL || creds.BASE_URL.includes('your-his-server') ||
+        !creds.API_KEY || creds.API_KEY === 'PASTE_YOUR_API_KEY_HERE') {
+      return { ok: false, error: 'API credentials not configured. Edit src/core/adapterConfig.js and set BASE_URL and API_KEY.' };
+    }
+
+    if (!period || !period.workArea) {
+      return { ok: false, error: 'Work Area is required.' };
+    }
+    if (!period.startDate) {
+      return { ok: false, error: 'Start Date is required (DD/MM/YYYY).' };
+    }
+
+    // Merge hardcoded credentials with the per-run period params
+    const cfg = {
+      baseUrl:   creds.BASE_URL,
+      apiKey:    creds.API_KEY,
+      workArea:  period.workArea,
+      dept:      period.dept      || '',
+      unit:      period.unit      || '',
+      payPeriod: period.payPeriod || '',
+      startDate: period.startDate,
+      endDate:   period.endDate   || '',
+      week:      period.week      || '',
+    };
+
+    const saved = JSON.parse(fs.readFileSync(parsedPath, 'utf8'));
+
+    // Try to fetch current HIS data for noop suppression; non-fatal if it fails.
+    let apiRoster = null;
+    let readErr = null;
+    try {
+      apiRoster = await readRoster(cfg);
+    } catch (e) {
+      readErr = e.message || String(e);
+    }
+
+    changes = buildChanges(saved.employees, cfg.startDate, apiRoster);
+
+    // Guard: if emp values are missing the snapshot is stale — tell user to re-convert.
+    const badEmp = changes.filter((c) => !c.empNum || c.empNum === 'undefined');
+    if (badEmp.length > 0) {
+      return {
+        ok: false,
+        error: `${badEmp.length} employee(s) have no EMP# in the saved roster snapshot. Please re-convert your Excel file in the Roster Formatter tab, then try again.`,
+      };
+    }
+
+    if (changes.length === 0) {
+      return { ok: true, noChanges: true, message: 'All Excel dates already match HIS — nothing to update.', readErr };
+    }
+
+    // Surface a compact summary so the log shows what is being sent.
+    const empNums = [...new Set(changes.map((c) => c.empNum))];
+    const sendSummary = `${changes.length} change(s) for ${empNums.length} employee(s): ${empNums.slice(0, 5).join(', ')}${empNums.length > 5 ? ' …' : ''}`;
+
+    const result = await updateRoster(cfg, changes, dryRun);
+    result._sendSummary = sendSummary;
+
+    // Rule: saved: false even with HTTP 200 = HIS did not commit — treat as failure.
+    if (!dryRun && result.saved === false) {
+      return {
+        ok: false,
+        error: 'HIS accepted the request but did not save (saved: false). Check HIS logs.',
+        result,
+        readErr,
+      };
+    }
+
+    return { ok: true, dryRun: Boolean(dryRun), changes, result, readErr };
+  } catch (err) {
+    const out = { ok: false, error: err.message || String(err) };
+    if (err.code)    out.code    = err.code;
+    if (err.body)    out.details = err.body;
+    if (changes)     out.changes = changes;
+    return out;
+  }
 });
 
 /** Module 2: read a formatted .xlsx back into a preview table. */

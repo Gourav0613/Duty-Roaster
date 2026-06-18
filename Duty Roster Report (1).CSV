@@ -1,0 +1,38 @@
+EMP#,,Name,Designation,Work Area,,21,22,23,24,25,26,27
+AF00075,,Parvathy Raju,SENIOR EXECUTIVE,,Material Stores,O,L,L,L,L,L,L
+AF00106,,Roki ,Assistant,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+AF00107,,Subhash Chander,EXECUTIVE,,Material Stores,O,MS9,MS9,MS9,MS9,MS9,MS9
+AF00110,,Ishwari Kumar Jha,EXECUTIVE,,Material Stores,O,E2,E2,E2,E2,E2,E2
+AF00113,,Ashok Kumar,Assistant Manager,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+AF00121,,Santosh Kumar,Assistant,,Material Stores,L,L,L,L,L,L,E2
+AF00125,,Mohar Singh,Assistant,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+AF00128,,Jeetu ,Assistant,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+AF00136,,Yogesh Sharma,Assistant,,Material Stores,NS1,NO,O,E2,E2,E2,E2
+AF00240,,Jay Prakash,Assistant,,Material Stores,O,GS3,GS3,GS3,GS3,GS3,GS3
+AF00249,,Devraj ,Manager,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+AF00256,,Bhanu Namdev,Assistant,,Material Stores,O,GS3,GS3,GS3,GS3,GS3,GS3
+AF00452,,Subhash Singh,Assistant,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+AF00456,,Neeraj Kumar,SENIOR EXECUTIVE,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1
+,Legend :- O: OFF; L/HL: Leave; S: Offical; Y: Double Duty; All others regular shifts;,,,,,,,,,,,
+EMP#,Name,Designation,Work Area,,21,22,23,24,25,26,27,
+AF00468,Suman Kumari,Assistant,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00480,Rahul Sharma,EXECUTIVE,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00501,Tushar Upadhyay,Assistant,,Material Stores,O,GS5,GS5,GS5,GS5,GS5,GS5,
+AF00544,Ajay Tanwar,Store Keeper,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00545,Yatender Vats,PHARMACIST,,Material Stores,O,M1,M1,M1,M1,M1,M1,
+AF00556,Neeraj Kumar Gautam,Deputy Manager,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00565,Ajit Sharma,Assistant,,Material Stores,O,GS3,GS3,GS3,GS3,GS3,GS3,
+AF00574,Aakash ,Assistant,,Material Stores,O,GS5,GS5,GS5,GS5,GS5,GS5,
+AF00592,Nitin Verma,Assistant,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00596,Anshul Kumar,SENIOR EXECUTIVE,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00597,Mukul Goswami,EXECUTIVE,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00614,Punit Sharma,Assistant Manager,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00618,Darpan Goyal,PHARMACIST,,Material Stores,M1,NS1,NS1,NO,M1,M1,M1,
+AF00625,Rohit ,Assistant,,Material Stores,O,E1,E1,E1,E1,E1,E1,
+EMP#,Name,Designation,Work Area,,21,22,23,24,25,26,27,
+AF00650,Pradeep ,Manager,,Material Stores,O,GS5,GS5,GS5,GS5,GS5,GS5,
+AF00655,Meenu Kumari,EXECUTIVE,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,
+AF00659,Yatin Kumar,PHARMACIST,,Material Stores,O,M1,M1,NS1,NS1,NO,E2,
+AF00672,Rohan ,PHARMACIST,,Material Stores,O,E2,E2,M1,M1,E2,E2,
+AF00678,Anil Kumar,PHARMACIST,,Material Stores,O,E2,E2,E2,E2,M1,M1,
+AF00685,Samrat ,SENIOR EXECUTIVE,,Material Stores,O,GS1,GS1,GS1,GS1,GS1,GS1,

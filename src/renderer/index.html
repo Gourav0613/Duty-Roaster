@@ -114,9 +114,9 @@
             <h1>Adapter Automation</h1>
             <p>Preview the latest formatted roster. Automation actions are on the way.</p>
           </div>
-          <div class="sync-badge">
+          <div class="sync-badge" id="syncBadge">
             <span class="sync-dot"></span>
-            All adapters syncing <span class="sync-time">(Last: 1m ago)</span>
+            <span id="syncBadgeText">Ready</span>
           </div>
         </header>
 
@@ -150,19 +150,99 @@
           </div>
         </div>
 
-        <div class="coming-soon">
-          <h3>Adapter actions <span class="badge">Coming soon</span></h3>
-          <div class="cs-grid">
-            <button class="cs-btn" disabled>Map shifts to adapter slots</button>
-            <div class="cs-tooltip-wrap">
-              <button class="cs-btn" disabled>Push schedule to system</button>
-              <div class="cs-tooltip">This action will be unlocked after full validation.</div>
+        <!-- Period + Push -->
+        <div class="api-section">
+
+          <div class="api-panel">
+            <div class="period-hd">
+              <div>
+                <h3 class="api-panel-title">Period Parameters</h3>
+                <p class="api-panel-sub">Saved between sessions. Shift data comes from the Excel file.</p>
+              </div>
+              <div class="period-save-row">
+                <button id="savePeriodBtn" class="btn small">Save</button>
+                <span id="periodSavedMsg" class="cfg-saved-msg hidden">✓ Saved</span>
+              </div>
             </div>
-            <button class="cs-btn" disabled>Validate coverage</button>
+            <div class="period-fields">
+              <div class="pf">
+                <label class="cfg-label">Work Area <span class="req">*</span></label>
+                <select id="p-workArea" class="cfg-input">
+                  <option value="">Select</option>
+                  <option value="10">Main Store</option>
+                  <option value="169">Material Stores</option>
+                  <option value="30">OT Pharmacy</option>
+                </select>
+              </div>
+              <div class="pf">
+                <label class="cfg-label">Dept</label>
+                <select id="p-dept" class="cfg-input">
+                  <option value="">Select</option>
+                  <option value="167">Material Stores</option>
+                  <option value="2">Pharmacy</option>
+                </select>
+              </div>
+              <div class="pf">
+                <label class="cfg-label">Start Date <span class="req">*</span></label>
+                <input id="p-startDate" type="date" class="cfg-input" />
+              </div>
+              <div class="pf">
+                <label class="cfg-label">End Date</label>
+                <input id="p-endDate" type="date" class="cfg-input" />
+              </div>
+              <div class="pf">
+                <label class="cfg-label">Pay Period <span class="req">*</span></label>
+                <input type="month" id="p-payPeriodMonth" class="cfg-input" />
+                <input type="hidden" id="p-payPeriod" />
+                <span id="p-payPeriodHint" class="pf-hint"></span>
+              </div>
+              <div class="pf">
+                <label class="cfg-label">Week</label>
+                <select id="p-week" class="cfg-input">
+                  <option value="-1">Select</option>
+                  <option value="0">Week 1</option>
+                  <option value="1">Week 2</option>
+                  <option value="2">Week 3</option>
+                  <option value="3">Week 4</option>
+                  <option value="4">Week 5</option>
+                  <option value="6">Month</option>
+                </select>
+              </div>
+            </div>
           </div>
+
+          <div class="api-panel sync-panel">
+            <div class="sync-hd">
+              <div>
+                <h3 class="api-panel-title">Push to HIS</h3>
+                <p class="api-panel-sub">Only dates present in the Excel are sent — blank cells are never written.</p>
+              </div>
+              <div class="sync-btns">
+                <button id="dryRunBtn" class="btn" disabled>Dry Run</button>
+                <button id="pushHisBtn" class="btn primary" disabled>Push to HIS</button>
+              </div>
+            </div>
+            <div id="syncStatus" class="status hidden"></div>
+            <div id="syncResultWrap" class="hidden">
+              <div id="syncResultContent" class="sync-result"></div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="sparkle-icon">✦</div>
+        <!-- Log panel -->
+        <div class="log-panel">
+          <div class="log-header">
+            <span class="log-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              Activity Log
+            </span>
+            <button class="link-btn log-clear" id="clearLogBtn">Clear</button>
+          </div>
+          <div id="logEntries" class="log-entries">
+            <span class="log-empty">No activity yet.</span>
+          </div>
+        </div>
       </section>
     </main>
   </div>
